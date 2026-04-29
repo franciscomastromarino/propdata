@@ -209,19 +209,42 @@ Job periódico que:
 
 ---
 
-## Costos estimados mensuales del MVP
+## Costos estimados
+
+### Scraping inicial (one-time) — ~1.5M listings de 4 portales
+
+| Opción | Costo estimado | Notas |
+|--------|---------------|-------|
+| **Crawlee self-hosted** | $0 (solo infra) | Gratis pero requiere proxies para evitar bloqueos |
+| **Crawlee + proxies** | $50-100 | Webshare/IPRoyal por el volumen de la corrida inicial |
+| **Bright Data Web Scraper** | ~$4,500 | $3 por cada 1,000 páginas × 1.5M páginas |
+| **Bright Data (solo proxies residenciales)** | ~$150-300 | $8.40/GB, estimando ~20-35GB para 1.5M páginas. Usás Crawlee para la lógica y Bright Data solo para IPs |
+| **Apify Cloud (managed)** | ~$200-500 | Plan Scale $199/mes, créditos incluidos cubren parte del volumen |
+
+**Recomendación**: Crawlee + Bright Data solo como proveedor de proxies residenciales (~$150-300). Obtenés la lógica custom de Crawlee con la red de IPs de Bright Data sin pagar $3/página.
+
+### Costos de procesamiento AI inicial (one-time)
+
+| Servicio | Costo estimado | Cálculo |
+|----------|---------------|---------|
+| Claude Haiku (extracción) | $200-400 | ~500 tokens/listing × 800K propiedades únicas |
+| OpenAI embeddings | $10-20 | text-embedding-3-small, ~$0.02/1M tokens |
+| Google Geocoding | $40-80 | $5/1K requests × 800K propiedades únicas (con cache de direcciones repetidas) |
+| **Total one-time** | **~$400-800** | — |
+
+### Costos mensuales operativos (post-scraping inicial)
 
 | Servicio | Costo |
 |----------|-------|
 | Neon PostgreSQL (Pro) | $19/mes |
 | Redis (Upstash) | $0-10/mes |
-| Claude Haiku (Instructor) | $50-100/mes (corridas incrementales) |
+| Claude Haiku (Instructor) | $50-100/mes (corridas incrementales ~100-200K listings nuevos/modificados) |
 | OpenAI embeddings | $5-10/mes |
 | Google Geocoding API | $5-20/mes |
 | Vercel (deploy) | $0-20/mes |
 | Mapbox | $0 (50K loads gratis) |
-| Proxies (opcional) | $0-30/mes |
-| **Total** | **~$80-210/mes** |
+| Proxies (Bright Data residential) | $30-80/mes |
+| **Total mensual** | **~$110-260/mes** |
 
 Primera corrida completa (one-time): ~$200-400 adicional en tokens de LLM.
 
