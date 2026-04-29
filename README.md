@@ -250,6 +250,16 @@ Primera corrida completa (one-time): ~$200-400 adicional en tokens de LLM.
 
 ---
 
+## Decisiones adicionales
+
+- **Moneda**: Todos los precios se normalizan a USD. Se usa API de dólar blue del día para conversión ARS→USD.
+- **Seed histórico**: Descartado para el MVP. Los datos se acumulan desde la primera corrida de scraping.
+- **Anti-bloqueo**: Bright Data proxies residenciales se encarga de rotación de IPs, fingerprinting y bypass de protecciones de los portales. Crawlee maneja la lógica, Bright Data la red.
+- **Monitoreo de scrapers**: Alertas automáticas cuando un crawler falla (cambio de HTML del portal, bloqueo, etc.). BullMQ registra jobs fallidos → notificación por email/Slack.
+- **Microservicio Python (futuro)**: Se agrega cuando se necesiten modelos de valuación custom (sklearn/xgboost) o detección de anomalías estadística. Lee de la misma Neon PostgreSQL. No es parte del MVP.
+
+---
+
 ## Timeline estimado
 
 | Fase | Duración | Acumulado |
