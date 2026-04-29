@@ -243,7 +243,7 @@ Job periódico que:
 | Google Geocoding API | $5-20/mes |
 | Vercel (deploy) | $0-20/mes |
 | Mapbox | $0 (50K loads gratis) |
-| Proxies (Bright Data residential) | $30-80/mes |
+| Bright Data proxies residenciales (corridas incrementales semanales) | $30-80/mes |
 | **Total mensual** | **~$110-260/mes** |
 
 Primera corrida completa (one-time): ~$200-400 adicional en tokens de LLM.
