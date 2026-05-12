@@ -1,0 +1,123 @@
+generator client {
+  provider        = "prisma-client"
+  output          = "../src/generated/prisma"
+  previewFeatures = ["postgresqlExtensions"]
+}
+
+datasource db {
+  provider   = "postgresql"
+  extensions = [postgis, vector]
+}
+
+model Portal {
+  id            String       @id @default(cuid())
+  name          String       @unique
+  baseUrl       String       @map("base_url")
+  scraperConfig Json?        @map("scraper_config")
+  createdAt     DateTime     @default(now()) @map("created_at")
+  updatedAt     DateTime     @updatedAt @map("updated_at")
+  rawListings   RawListing[]
+  listings      Listing[]
+
+  @@map("portals")
+}
+
+model RawListing {
+  id         String   @id @default(cuid())
+  portalId   String   @map("portal_id")
+  externalId String   @map("external_id")
+  rawData    Json     @map("raw_data")
+  scrapedAt  DateTime @default(now()) @map("scraped_at")
+  processed  Boolean  @default(false)
+  portal     Portal   @relation(fields: [portalId], references: [id])
+
+  @@unique([portalId, externalId])
+  @@index([processed])
+  @@map("raw_listings")
+}
+
+model Property {
+  id                  String         @id @default(cuid())
+  addressRaw          String?        @map("address_raw")
+  addressNormalized   String?        @map("address_normalized")
+  latitude            Float?
+  longitude           Float?
+  barrio              String?
+  ciudad              String?
+  provincia           String?
+  tipo                String?
+  ambientes           Int?
+  superficieM2        Float?         @map("superficie_m2")
+  precio              Float?
+  moneda              String?
+  precioUsd           Float?         @map("precio_usd")
+  precioPorM2Usd      Float?         @map("precio_por_m2_usd")
+  descripcion         String?
+  amenities           Json?
+  aptoCredito         Boolean?       @map("apto_credito")
+  antiguedad          Int?
+  operacion           String?
+  estado              String?
+  orientacion         String?
+  createdAt           DateTime       @default(now()) @map("created_at")
+  updatedAt           DateTime       @updatedAt @map("updated_at")
+  listings            Listing[]
+  priceHistory        PriceHistory[]
+
+  @@index([barrio])
+  @@index([tipo])
+  @@index([precioUsd])
+  @@index([precioPorM2Usd])
+  @@index([latitude, longitude])
+  @@map("properties")
+}
+
+model Listing {
+  id                String    @id @default(cuid())
+  propertyId        String    @map("property_id")
+  portalId          String    @map("portal_id")
+  externalUrl       String    @map("external_url")
+  precioPublicado   Float?    @map("precio_publicado")
+  moneda            String?
+  fechaPublicacion  DateTime? @map("fecha_publicacion")
+  fechaBaja         DateTime? @map("fecha_baja")
+  activo            Boolean   @default(true)
+  createdAt         DateTime  @default(now()) @map("created_at")
+  updatedAt         DateTime  @updatedAt @map("updated_at")
+  property          Property  @relation(fields: [propertyId], references: [id])
+  portal            Portal    @relation(fields: [portalId], references: [id])
+
+  @@unique([portalId, externalUrl])
+  @@index([propertyId])
+  @@index([activo])
+  @@map("listings")
+}
+
+model PriceHistory {
+  id         String   @id @default(cuid())
+  propertyId String   @map("property_id")
+  precio     Float
+  moneda     String
+  precioUsd  Float    @map("precio_usd")
+  recordedAt DateTime @default(now()) @map("recorded_at")
+  property   Property @relation(fields: [propertyId], references: [id])
+
+  @@index([propertyId])
+  @@index([recordedAt])
+  @@map("price_history")
+}
+
+model Zone {
+  id               String   @id @default(cuid())
+  name             String
+  type             String
+  geometryGeoJson  Json?    @map("geometry_geojson")
+  avgPriceM2Usd    Float?   @map("avg_price_m2_usd")
+  medianPriceM2Usd Float?   @map("median_price_m2_usd")
+  listingCount     Int      @default(0) @map("listing_count")
+  createdAt        DateTime @default(now()) @map("created_at")
+  updatedAt        DateTime @updatedAt @map("updated_at")
+
+  @@unique([name, type])
+  @@map("zones")
+}
